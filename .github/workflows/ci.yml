@@ -1,0 +1,80 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  windows:
+    name: Windows (Win32, MSVC)
+    runs-on: windows-2022
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Configure
+        run: cmake -S . -B build -G "Visual Studio 17 2022" -A Win32
+
+      - name: Build
+        run: cmake --build build --config Release --parallel
+
+      - name: Unit tests
+        run: ctest --test-dir build -C Release --output-on-failure
+
+      - name: Package check
+        run: python tools/check_package.py build/stage --platform windows
+
+      - name: Upload package
+        uses: actions/upload-artifact@v4
+        with:
+          name: DemirarchLambdaUI-windows
+          path: |
+            build/stage
+            !build/stage/**/*.exp
+            !build/stage/**/*.lib
+          if-no-files-found: error
+
+  linux:
+    name: Linux (i386, GCC 9, glibc 2.31 baseline)
+    runs-on: ubuntu-latest
+    container: ubuntu:20.04
+    env:
+      DEBIAN_FRONTEND: noninteractive
+    steps:
+      - name: Install toolchain
+        run: |
+          dpkg --add-architecture i386
+          apt-get update
+          apt-get install -y --no-install-recommends ca-certificates git g++-multilib gcc-multilib \
+            libgl1-mesa-dev libudev-dev python3 python3-pip binutils make
+          python3 -m pip install --no-cache-dir "cmake==3.28.3" "ninja==1.11.1.1"
+
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Configure
+        run: |
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+          cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=cmake/LinuxI386.cmake
+
+      - name: Build
+        run: cmake --build build --parallel
+
+      - name: Unit tests
+        run: ctest --test-dir build --output-on-failure
+
+      - name: Package check
+        run: python3 tools/check_package.py build/stage --platform linux --max-glibc 2.31
+
+      - name: Upload package
+        uses: actions/upload-artifact@v4
+        with:
+          name: DemirarchLambdaUI-linux
+          path: build/stage
+          if-no-files-found: error

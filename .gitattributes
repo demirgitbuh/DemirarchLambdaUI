@@ -1,0 +1,10 @@
+* text=auto
+*.sh text eol=lf
+*.gam text eol=crlf
+*.lib binary
+*.so binary
+*.so.0 binary
+*.dll binary
+*.png binary
+*.tga binary
+*.bmp binary

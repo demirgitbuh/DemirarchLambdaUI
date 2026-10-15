@@ -1,0 +1,11 @@
+// Demirarch Lambda UI @LAMBDA_VERSION_STRING@ - Opposing Force
+game "Opposing Force: Lambda UI"
+version "@LAMBDA_VERSION_STRING@"
+fallback_dir "gearbox"
+startmap "of0a0"
+trainmap "ofboot0"
+mpentity "info_player_deathmatch"
+cldll "1"
+gamedll "dlls\hl.dll"
+gamedll_linux "dlls/hl.so"
+secure "0"
