@@ -21,7 +21,6 @@
 #include <SDL2/SDL_messagebox.h>
 #include "lambda_bridge/engine_sdl2.h" // LAMBDA: motorun SDL2'sine calisma zamaninda erisim (bkz. bridge/)
 #include "lambda_bridge/client_bridge.h" // LAMBDA
-#include "pm_defs.h"                      // LAMBDA
 
 #include "hud.h"
 #include "cl_util.h"
@@ -30,6 +29,7 @@
 //#include "vgui_schememanager.h"
 
 #include "pm_shared.h"
+#include "pm_defs.h" // LAMBDA
 
 #include <string.h>
 #include "vgui_int.h"

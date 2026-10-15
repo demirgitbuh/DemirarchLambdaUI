@@ -24,7 +24,8 @@ T* FindInterface(CreateInterfaceFn* factories, int count, const char* name)
 		if (!factories[i])
 			continue;
 		int rc = 0;
-		if (IBaseInterface* p = factories[i](name, &rc))
+		// HL25 SDK'da CreateInterfaceFn void* döndürür (public/tier1/interface.h).
+		if (void* p = factories[i](name, &rc))
 			return static_cast<T*>(p);
 	}
 	return nullptr;
@@ -180,7 +181,7 @@ public:
 namespace
 {
 ClientVGui g_client_vgui;
-IBaseInterface* CreateClientVGui() { return &g_client_vgui; }
+void* CreateClientVGui() { return static_cast<v::IClientVGUI*>(&g_client_vgui); }
 InterfaceReg g_client_vgui_reg(CreateClientVGui, vgui2::kClientVGuiName);
 } // namespace
 } // namespace lambda::bridge
