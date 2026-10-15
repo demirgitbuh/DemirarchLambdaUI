@@ -102,11 +102,15 @@ function(lambda_add_game GAME_NAME MOD_DIR)
 		OUTPUT_NAME client
 		INSTALL_RPATH "$ORIGIN"
 		LIBRARY_OUTPUT_DIRECTORY ${LAMBDA_STAGE_DIR}/${MOD_DIR}/cl_dlls
-		RUNTIME_OUTPUT_DIRECTORY ${LAMBDA_STAGE_DIR}/${MOD_DIR}/cl_dlls)
+		RUNTIME_OUTPUT_DIRECTORY ${LAMBDA_STAGE_DIR}/${MOD_DIR}/cl_dlls
+		ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/implib/${GAME_NAME}/client
+		PDB_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/pdb/${GAME_NAME}/client)
 	foreach(_cfg IN ITEMS DEBUG RELEASE RELWITHDEBINFO MINSIZEREL)
 		set_target_properties(${_client} PROPERTIES
 			LIBRARY_OUTPUT_DIRECTORY_${_cfg} ${LAMBDA_STAGE_DIR}/${MOD_DIR}/cl_dlls
-			RUNTIME_OUTPUT_DIRECTORY_${_cfg} ${LAMBDA_STAGE_DIR}/${MOD_DIR}/cl_dlls)
+			RUNTIME_OUTPUT_DIRECTORY_${_cfg} ${LAMBDA_STAGE_DIR}/${MOD_DIR}/cl_dlls
+			# İçe aktarma kitaplıkları (.lib/.exp) oyun başına ayrı; aynı adlı hedefler çakışmasın.
+			ARCHIVE_OUTPUT_DIRECTORY_${_cfg} ${CMAKE_BINARY_DIR}/implib/${GAME_NAME}/client)
 	endforeach()
 
 	# --- Sunucu (dlls/hl) ---
@@ -130,10 +134,13 @@ function(lambda_add_game GAME_NAME MOD_DIR)
 	set_target_properties(${_server} PROPERTIES
 		OUTPUT_NAME hl
 		LIBRARY_OUTPUT_DIRECTORY ${LAMBDA_STAGE_DIR}/${MOD_DIR}/dlls
-		RUNTIME_OUTPUT_DIRECTORY ${LAMBDA_STAGE_DIR}/${MOD_DIR}/dlls)
+		RUNTIME_OUTPUT_DIRECTORY ${LAMBDA_STAGE_DIR}/${MOD_DIR}/dlls
+		ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/implib/${GAME_NAME}/server
+		PDB_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/pdb/${GAME_NAME}/server)
 	foreach(_cfg IN ITEMS DEBUG RELEASE RELWITHDEBINFO MINSIZEREL)
 		set_target_properties(${_server} PROPERTIES
 			LIBRARY_OUTPUT_DIRECTORY_${_cfg} ${LAMBDA_STAGE_DIR}/${MOD_DIR}/dlls
-			RUNTIME_OUTPUT_DIRECTORY_${_cfg} ${LAMBDA_STAGE_DIR}/${MOD_DIR}/dlls)
+			RUNTIME_OUTPUT_DIRECTORY_${_cfg} ${LAMBDA_STAGE_DIR}/${MOD_DIR}/dlls
+			ARCHIVE_OUTPUT_DIRECTORY_${_cfg} ${CMAKE_BINARY_DIR}/implib/${GAME_NAME}/server)
 	endforeach()
 endfunction()

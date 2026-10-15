@@ -6,6 +6,7 @@ add_executable(lambda_tests
 
 target_link_libraries(lambda_tests PRIVATE lambda_core)
 target_compile_options(lambda_tests PRIVATE $<$<CXX_COMPILER_ID:MSVC>:/W3 /utf-8>)
+target_compile_definitions(lambda_tests PRIVATE $<$<PLATFORM_ID:Windows>:_CRT_SECURE_NO_WARNINGS>)
 target_link_options(lambda_tests PRIVATE $<$<PLATFORM_ID:Linux>:-static-libstdc++ -static-libgcc>)
 
 if(TARGET lambda_setup_lib)

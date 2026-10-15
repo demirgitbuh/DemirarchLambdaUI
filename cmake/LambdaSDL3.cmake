@@ -52,5 +52,7 @@ lambda_sdl_option(SDL_PIPEWIRE OFF)
 lambda_sdl_option(SDL_SYSTEM_ICONV OFF)
 lambda_sdl_option(SDL_RPATH OFF)
 lambda_sdl_option(SDL_CLANG_TIDY OFF)
+# Pencere sistemi (X11/Wayland) olmadan derleme bilinçli: pencere motorun SDL2'sinde.
+lambda_sdl_option(SDL_UNIX_CONSOLE_BUILD ON)
 
 add_subdirectory("${LAMBDA_SDL3_DIR}" "${CMAKE_BINARY_DIR}/third_party/SDL" EXCLUDE_FROM_ALL)
