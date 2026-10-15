@@ -32,6 +32,7 @@
 #include <SDL2/SDL_mouse.h>
 #include <SDL2/SDL_gamecontroller.h>
 #include "lambda_bridge/engine_sdl2.h" // LAMBDA: motorun SDL2'sine calisma zamaninda erisim (bkz. bridge/)
+#include "lambda_bridge/client_bridge.h" // LAMBDA
 
 void IN_ResetMouse();
 
@@ -716,6 +717,13 @@ IN_StartupJoystick
 */
 void IN_StartupJoystick()
 {
+	// LAMBDA: gamepad modunda kontrolcuyu Lambda UI (SDL3) yonetir; motorun SDL2'si acmaz.
+	if (lambda::bridge::GamepadLayerActive())
+	{
+		IN_LambdaCloseNativeJoystick();
+		return;
+	}
+
 	// abort startup if user requests no joystick
 	if (0 != gEngfuncs.CheckParm("-nojoy", NULL))
 		return;
@@ -858,6 +866,9 @@ IN_Commands
 */
 void IN_Commands()
 {
+	if (lambda::bridge::GamepadLayerActive()) // LAMBDA
+		return;
+
 	int i, key_index;
 
 	if (!joy_avail)
@@ -944,6 +955,9 @@ IN_JoyMove
 */
 void IN_JoyMove(float frametime, usercmd_t* cmd)
 {
+	if (lambda::bridge::GamepadLayerActive()) // LAMBDA
+		return;
+
 	float speed, aspeed;
 	float fAxisValue, fTemp;
 	int i;
@@ -1139,6 +1153,7 @@ void IN_Move(float frametime, usercmd_t* cmd)
 	}
 
 	IN_JoyMove(frametime, cmd);
+	lambda::bridge::OnInMove(frametime, cmd); // LAMBDA
 }
 
 /*
@@ -1195,4 +1210,13 @@ void IN_Init()
 
 	IN_StartupMouse();
 	IN_StartupJoystick();
+}
+
+// LAMBDA: gamepad moduna geciste motorun SDL2 ile actigi ozgun joystick kapatilir.
+void IN_LambdaCloseNativeJoystick()
+{
+	if (s_pJoystick)
+		SDL_GameControllerClose(s_pJoystick);
+	s_pJoystick = NULL;
+	joy_avail = false;
 }

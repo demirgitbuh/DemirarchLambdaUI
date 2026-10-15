@@ -34,6 +34,8 @@ int ShowSimpleMessageBox(Uint32 flags, const char* title, const char* message, S
 // Lambda UI'nin klavye/fare/metin olaylarını gözlemlemesi için (motorun olay akışını değiştirmez).
 void AddEventWatch(SDL_EventFilter filter, void* userdata);
 void DelEventWatch(SDL_EventFilter filter, void* userdata);
+// Motorun GL bağlamındaki bir OpenGL fonksiyonu (Windows'ta GL 1.1 için opengl32'ye düşer).
+void* GL_GetProcAddress(const char* name);
 } // namespace lambda::engine_sdl2
 
 #ifndef LAMBDA_ENGINE_SDL2_NO_REDIRECT

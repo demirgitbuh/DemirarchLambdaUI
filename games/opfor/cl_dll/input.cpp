@@ -6,6 +6,7 @@
 // rights reserved.
 #include "hud.h"
 #include "cl_util.h"
+#include "lambda_bridge/client_bridge.h" // LAMBDA
 #include "camera.h"
 #include "kbutton.h"
 #include "cvardef.h"
@@ -366,6 +367,9 @@ Return 1 to allow engine to process the key, otherwise, act on it as needed
 int DLLEXPORT HUD_Key_Event(int down, int keynum, const char* pszCurrentBinding)
 {
 	//	RecClKeyEvent(down, keynum, pszCurrentBinding);
+
+	if (0 == lambda::bridge::OnKeyEvent(down, keynum, pszCurrentBinding)) // LAMBDA
+		return 0;
 
 	if (gViewPort)
 		return static_cast<int>(gViewPort->KeyInput(0 != down, keynum, pszCurrentBinding));
@@ -885,6 +889,8 @@ int CL_ButtonBits(bool bResetState)
 		in_score.state &= ~2;
 	}
 
+	bits |= lambda::bridge::ButtonBits(); // LAMBDA
+
 	return bits;
 }
 
@@ -1022,6 +1028,8 @@ void CL_UnloadParticleMan();
 
 void DLLEXPORT HUD_Shutdown()
 {
+	lambda::bridge::OnShutdown(); // LAMBDA
+
 	//	RecClShutdown();
 
 	ShutdownInput();

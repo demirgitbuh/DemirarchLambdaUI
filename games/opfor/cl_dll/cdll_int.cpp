@@ -20,6 +20,8 @@
 
 #include <SDL2/SDL_messagebox.h>
 #include "lambda_bridge/engine_sdl2.h" // LAMBDA: motorun SDL2'sine calisma zamaninda erisim (bkz. bridge/)
+#include "lambda_bridge/client_bridge.h" // LAMBDA
+#include "pm_defs.h"                      // LAMBDA
 
 #include "hud.h"
 #include "cl_util.h"
@@ -109,6 +111,7 @@ void DLLEXPORT HUD_PlayerMove(struct playermove_s* ppmove, int server)
 	//	RecClClientMove(ppmove, server);
 
 	PM_Move(ppmove, server);
+	lambda::bridge::OnPlayerMove(ppmove->waterlevel, ppmove->onground != -1); // LAMBDA
 }
 
 static bool CL_InitClient()
@@ -144,6 +147,8 @@ int DLLEXPORT Initialize(cl_enginefunc_t* pEnginefuncs, int iVersion)
 
 	memcpy(&gEngfuncs, pEnginefuncs, sizeof(cl_enginefunc_t));
 
+	lambda::bridge::OnInitialize(); // LAMBDA
+
 	const bool result = CL_InitClient();
 
 	if (!result)
@@ -177,6 +182,7 @@ int DLLEXPORT HUD_VidInit()
 	gHUD.VidInit();
 
 	VGui_Startup();
+	lambda::bridge::OnVidInit(); // LAMBDA
 
 	return 1;
 }
@@ -198,6 +204,7 @@ void DLLEXPORT HUD_Init()
 
 	gHUD.Init();
 	Scheme_Init();
+	lambda::bridge::OnHudInit(); // LAMBDA
 }
 
 
@@ -214,7 +221,8 @@ int DLLEXPORT HUD_Redraw(float time, int intermission)
 {
 	//	RecClHudRedraw(time, intermission);
 
-	gHUD.Redraw(time, 0 != intermission);
+	if (!lambda::bridge::OnRedraw(time, intermission)) // LAMBDA
+		gHUD.Redraw(time, 0 != intermission);
 
 	return 1;
 }
@@ -270,6 +278,7 @@ void DLLEXPORT HUD_Frame(double time)
 	//	RecClHudFrame(time);
 
 	GetClientVoiceMgr()->Frame(time);
+	lambda::bridge::OnFrame(time); // LAMBDA
 }
 
 

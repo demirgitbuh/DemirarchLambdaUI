@@ -30,6 +30,7 @@ struct Table
 	int(SDLCALL* ShowSimpleMessageBox)(Uint32, const char*, const char*, SDL_Window*) = nullptr;
 	void(SDLCALL* AddEventWatch)(SDL_EventFilter, void*) = nullptr;
 	void(SDLCALL* DelEventWatch)(SDL_EventFilter, void*) = nullptr;
+	void*(SDLCALL* GL_GetProcAddress)(const char*) = nullptr;
 };
 
 Table g_table;
@@ -80,6 +81,7 @@ Table& Get()
 			Bind(module, g_table.ShowSimpleMessageBox, "SDL_ShowSimpleMessageBox");
 			Bind(module, g_table.AddEventWatch, "SDL_AddEventWatch");
 			Bind(module, g_table.DelEventWatch, "SDL_DelEventWatch");
+			Bind(module, g_table.GL_GetProcAddress, "SDL_GL_GetProcAddress");
 			g_table.available = g_table.PumpEvents != nullptr;
 		}
 	}
@@ -184,5 +186,12 @@ void DelEventWatch(SDL_EventFilter filter, void* userdata)
 {
 	if (auto f = Get().DelEventWatch)
 		f(filter, userdata);
+}
+
+void* GL_GetProcAddress(const char* name)
+{
+	if (auto f = Get().GL_GetProcAddress)
+		return f(name);
+	return nullptr;
 }
 } // namespace lambda::engine_sdl2

@@ -42,22 +42,22 @@ std::string Narrow(const std::wstring& w)
 	return s;
 }
 
-FILE* OpenFile(const std::string& path, const wchar_t* mode) { return _wfopen(Wide(path).c_str(), mode); }
-} // namespace
-#else
-namespace
-{
-FILE* OpenFile(const std::string& path, const char* mode) { return std::fopen(path.c_str(), mode); }
 } // namespace
 #endif
 
-std::optional<std::string> ReadFile(const std::string& path, size_t max_bytes)
+std::FILE* OpenFile(const std::string& path, const char* mode)
 {
 #ifdef _WIN32
-	FILE* f = OpenFile(path, L"rb");
+	const std::string m = mode ? mode : "r";
+	return _wfopen(Wide(path).c_str(), std::wstring(m.begin(), m.end()).c_str());
 #else
-	FILE* f = OpenFile(path, "rb");
+	return std::fopen(path.c_str(), mode);
 #endif
+}
+
+std::optional<std::string> ReadFile(const std::string& path, size_t max_bytes)
+{
+	FILE* f = OpenFile(path, "rb");
 	if (!f)
 		return std::nullopt;
 	std::string data;
@@ -82,11 +82,7 @@ std::optional<std::string> ReadFile(const std::string& path, size_t max_bytes)
 bool WriteFileAtomic(const std::string& path, const std::string& contents)
 {
 	const std::string tmp = path + ".tmp";
-#ifdef _WIN32
-	FILE* f = OpenFile(tmp, L"wb");
-#else
 	FILE* f = OpenFile(tmp, "wb");
-#endif
 	if (!f)
 		return false;
 	bool ok = std::fwrite(contents.data(), 1, contents.size(), f) == contents.size();

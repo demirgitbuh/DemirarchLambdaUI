@@ -5,6 +5,7 @@ add_library(lambda_core STATIC
 	src/document.cpp
 	src/fileio.cpp
 	src/input.cpp
+	src/log.cpp
 	src/mode.cpp
 	src/profile_store.cpp
 	src/recovery.cpp
